@@ -1,35 +1,67 @@
-let date_util = require("../utils/date_util")
+// redis
 let redis = require("redis");
-let redisClient = redis.createClient({
-    host: '127.0.0.1',
-    port: '6379',
-    return_buffers: false,// If set to true, then all replies will be sent to callbacks as Buffers instead of Strings.
-    retry_strategy: function (options) {
-        console.log(options);
-        if (options.error && options.error.code === 'ECONNREFUSED') {
-            // End reconnecting on a specific error and flush all commands with
-            // a individual error
-            return new Error('The server refused the connection');
-        }
-        if (options.total_retry_time > 1000 * 60 * 60) {
-            // End reconnecting after a specific timeout and flush all commands
-            // with a individual error
-            return new Error('Retry time exhausted');
-        }
-        if (options.attempt > 10) {
-            // End reconnecting with built in error
-            return undefined;
-        }
-        // reconnect after
-        return Math.min(options.attempt * 100, 3000);
-    }
+// async_redis
+let async_redis = require("async-redis");
+// IoRedis
+let IoRedis = require('ioredis');
+// RedLock
+let RedLock = require("redlock");
+// app_config
+let app_config = require("../../app_config");
+// date_util
+let date_util = require("../utils/date_util");
+
+// redis 单节点配置
+let redis_option = app_config.database.redis_option;
+// redis 集群配置
+let redis_cluster_option = app_config.database.redis_cluster_option;
+
+// redis_client
+let redis_client = redis.createClient(redis_option);
+// async_redis_client
+let async_redis_client = async_redis.createClient(redis_option);
+// redlock NOTE: 这里只能使用redis_client，不能使用async_redis_client;
+let redlock = new RedLock([redis_client]);
+
+// redis_cluster_client
+let redis_cluster_client = new IoRedis.Cluster(redis_cluster_option);
+// redlock_cluster NOTE: 这里只能使用redis_cluster_client，不能使用async_redis_cluster_client;
+let redlock_cluster = new RedLock([redis_cluster_client]);
+
+redis_client.on("error", function (err) {
+    console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ redis_client ] A redis error has occurred:', err);
+});
+async_redis_client.on("error", function (err) {
+    console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ async_redis_client ] A redis error has occurred:', err);
+});
+redlock.on('clientError', function (err) {
+    console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ redlock ] A redis error has occurred:', err);
 });
 
-redisClient.on("error", function (err) {
-    console.log(date_util.format(), err.toString());
+redis_cluster_client.on('error', function (err) {
+    console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ redis_cluster_client ] A redis error has occurred:', err);
 });
 
-module.exports = {
-    redis,
-    redisClient
-};
+redlock_cluster.on('clientError', function (err) {
+    console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ redlock_cluster ] A redis error has occurred:', err);
+});
+
+// // async_redis_cluster_client
+// let async_redis_cluster_client = async_redis.createClient(redis_cluster_option);
+// async_redis_cluster_client.on('error', function (err) {
+//     console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ async_redis_cluster_client ] A redis error has occurred:', err);
+// });
+
+let redis_util = {};
+redis_util.redis = redis_util; // 原生redis
+// Redis单节点
+redis_util.redis_client = redis_client;// callback redis client
+redis_util.async_redis_client = async_redis_client;// async redis client
+// Redis集群
+redis_util.redis_cluster_client = redis_cluster_client;// callback redis cluster client
+// redis_util.async_redis_cluster_client = async_redis_cluster_client;// async redis cluster client
+// Redlock
+redis_util.redlock = redlock;// redlock
+redis_util.redlock_cluster = redlock_cluster;// redlock_cluster
+
+module.exports = redis_util;

@@ -26,9 +26,40 @@ date_util.pattern = function () {
     return data;
 };
 
-date_util.format = function (pattern = this.pattern().ymdhms) {
-    stack_util.log(`pattern: ${pattern}`);
-    return (moment().format(pattern));
+/**
+ * format([[date,] pattern])
+ * @param date Date对象
+ * @param pattern 格式化string
+ * @returns {string}
+ */
+date_util.format = function (date, pattern) {
+    let _date;
+    let _pattern;
+    if (arguments.length >= 2) {
+        _date = date;
+        _pattern = pattern;
+    } else if (arguments.length === 1) {
+        if (typeof date === "object" && date instanceof Date) {
+            _date = date;
+        } else if (typeof date === "string") {
+            _pattern = date;
+        }
+    }
+    if (!_date) _date = new Date();
+    if (!_pattern) _pattern = this.pattern().ymdhmsSSS;
+
+    stack_util.log(`pattern: ${_pattern}`);
+    return (moment(_date).format(_pattern));
+};
+
+/**
+ * 获取毫秒数
+ * @param date 时间，非必填
+ * @returns {number}
+ */
+date_util.getTime = function (date) {
+    if (!date) date = new Date();
+    return date.getTime();
 };
 
 module.exports = date_util;
