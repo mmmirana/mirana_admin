@@ -10,10 +10,13 @@ let util = {};
  * 创建后端JS工具类
  * @param util_name 工具类名称 abc abc.js
  * @param util_dir
+ * @param overwriteIfExist 文件存在依然重新写入
  * @returns {Promise<void>}
  */
-util.createBackendUtilfile = async function (util_name, util_dir = app_config.backend.path.js_utils_dir) {
-    console.log(`createBackendUtilfile, util_name:${util_name}, util_dir: ${util_dir}`);
+util.createBackendUtilfile = async function (util_name, util_dir, overwriteIfExist = false) {
+    if (!util_dir) util_dir = app_config.backend.path.js_utils_dir;
+
+    console.log(`createBackendUtilfile, util_name:${util_name}, util_dir: ${util_dir}, overwriteIfExist: ${overwriteIfExist}`);
 
     let util_module_name = file_util.getPreffix(util_name);
     let filepath = path.resolve(util_dir, `${util_module_name}.js`);
@@ -22,7 +25,12 @@ util.createBackendUtilfile = async function (util_name, util_dir = app_config.ba
 let ${util_module_name} = {};
 module.exports = ${util_module_name};`;
 
-    await fs.outputFile(filepath, utilTempStr);
+    let fileExists = await fs.exists(filepath);
+    if (fileExists && overwriteIfExist) {
+        await fs.outputFile(filepath, utilTempStr);
+    } else {
+        console.error(`file: ${filepath} is existed, can't overwrite`);
+    }
 
 };
 
@@ -30,10 +38,13 @@ module.exports = ${util_module_name};`;
  * 创建前端JS工具类
  * @param util_name 工具类名称 abc abc.js
  * @param util_dir
+ * @param overwriteIfExist 文件存在依然重新写入
  * @returns {Promise<void>}
  */
-util.createFrontendUtilfile = async function (util_name, util_dir = app_config.frontend.path.js_utils_dir) {
-    console.log(`createFrontendUtilfile, util_name:${util_name}, util_dir: ${util_dir}`);
+util.createFrontendUtilfile = async function (util_name, util_dir, overwriteIfExist = false) {
+    if (!util_dir) util_dir = app_config.backend.path.js_utils_dir;
+
+    console.log(`createFrontendUtilfile, util_name:${util_name}, util_dir: ${util_dir}, overwriteIfExist: ${overwriteIfExist}`);
 
     let util_module_name = file_util.getPreffix(util_name);
     let filepath = path.resolve(util_dir, `${util_module_name}.js`);
@@ -55,8 +66,12 @@ function factory() {
     return ${util_module_name};
 }`;
 
-    await fs.outputFile(filepath, utilTempStr);
-
+    let fileExists = await fs.exists(filepath);
+    if (fileExists && overwriteIfExist) {
+        await fs.outputFile(filepath, utilTempStr);
+    } else {
+        console.error(`file: ${filepath} is existed, can't overwrite`);
+    }
 };
 
 module.exports = util;
