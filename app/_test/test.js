@@ -11,7 +11,7 @@ console.log(ctx_util.getRootDir());
 
 // test mysql
 mysql_util.db.query("select 1").then(result => {
-    console.log(result);
+    if (result) console.log(result);
 }).catch(err => {
-    console.log(result);
+    console.log(err);
 });
