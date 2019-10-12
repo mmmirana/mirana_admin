@@ -5,7 +5,7 @@ const db = rds({
     port: 3306,
     user: 'root',
     password: '1234',
-    database: '',
+    database: 'db_mirana',
 });
 
 let mysql_util = {};
