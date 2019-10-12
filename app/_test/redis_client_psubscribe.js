@@ -11,10 +11,11 @@ redis_client_sub_pattern.on("psubscribe", function (channel, count) {
 });
 redis_client_sub_pattern.on("pmessage", function (pattern, channel, message) {
     if (psubscribeMsgTimes >= maxPSubscribeMsgTimes) {
-        redis_client_sub_pattern.punsubscribe();
-        redis_client_sub_pattern.quit();
-        console.log(`redis_client_sub_pattern.ready: ${redis_client_sub_pattern.ready}; redis_client_sub_pattern.closing: ${redis_client_sub_pattern.closing}; `)
-        console.log(date_util.format(), `pattern取消订阅`);
+        if (redis_client_sub_pattern.closing === false) {
+            redis_client_sub_pattern.punsubscribe();
+            redis_client_sub_pattern.quit();
+            console.log(date_util.format(), `pattern取消订阅`);
+        }
     } else {
         console.log(date_util.format(), `pattern接收到消息，pattern：${pattern}，channel：${channel}，message：${message}`);
         psubscribeMsgTimes++;
