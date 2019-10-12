@@ -1,12 +1,7 @@
 const rds = require('ali-rds');
+const mysql_cfg = require("../_config/mysql_cfg");
 
-const db = rds({
-    host: 'localhost',
-    port: 3306,
-    user: 'root',
-    password: '1234',
-    database: 'db_mirana',
-});
+const db = rds(mysql_cfg);
 
 let mysql_util = {};
 

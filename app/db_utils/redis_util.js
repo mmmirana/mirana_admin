@@ -6,15 +6,13 @@ let async_redis = require("async-redis");
 let IoRedis = require('ioredis');
 // RedLock
 let RedLock = require("redlock");
-// app_config
-let app_config = require("../../app_config");
 // date_util
 let date_util = require("../utils/date_util");
 
 // redis 单节点配置
-let redis_option = app_config.database.redis_option;
+let redis_option = require("../_config/redis_cfg");
 // redis 集群配置
-let redis_cluster_option = app_config.database.redis_cluster_option;
+let redis_cluster_option = require("../_config/redis_cluster_cfg");
 
 // redis_client
 let redis_client = redis.createClient(redis_option);
