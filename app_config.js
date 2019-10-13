@@ -4,6 +4,17 @@ let app_config = {
         description: 'p_description',
         version: 'p_version',
     },
+    /**
+     * 路由配置
+     */
+    router: {
+        // 扫描的目录，支持string和array，string支持','分割
+        scandir: 'src/router',
+        // 扫描的文件关键字
+        scanfile_keyword: '.*_route.js$',
+        // 扫描的文件是否正则匹配
+        scanfile_regexp: true,
+    },
     // 后端配置
     backend: {
         // 路径配置

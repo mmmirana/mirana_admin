@@ -27,27 +27,27 @@ let redis_cluster_client = new IoRedis.Cluster(redis_cluster_option);
 let redlock_cluster = new RedLock([redis_cluster_client]);
 
 redis_client.on("error", function (err) {
-    console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ redis_client ] A redis error has occurred:', err);
+    console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ redis_client ] A redis error has occurred:', err.toString());
 });
 async_redis_client.on("error", function (err) {
-    console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ async_redis_client ] A redis error has occurred:', err);
+    console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ async_redis_client ] A redis error has occurred:', err.toString());
 });
 redlock.on('clientError', function (err) {
-    console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ redlock ] A redis error has occurred:', err);
+    console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ redlock ] A redis error has occurred:', err.toString());
 });
 
 redis_cluster_client.on('error', function (err) {
-    console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ redis_cluster_client ] A redis error has occurred:', err);
+    console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ redis_cluster_client ] A redis error has occurred:', err.toString());
 });
 
 redlock_cluster.on('clientError', function (err) {
-    console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ redlock_cluster ] A redis error has occurred:', err);
+    console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ redlock_cluster ] A redis error has occurred:', err.toString());
 });
 
 // // async_redis_cluster_client
 // let async_redis_cluster_client = async_redis.createClient(redis_cluster_option);
 // async_redis_cluster_client.on('error', function (err) {
-//     console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ async_redis_cluster_client ] A redis error has occurred:', err);
+//     console.error(date_util.format(date_util.pattern().ymdhmsSSS), '[ async_redis_cluster_client ] A redis error has occurred:', err.toString());
 // });
 
 let redis_util = {};
