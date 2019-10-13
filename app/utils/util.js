@@ -2,7 +2,8 @@ let path = require("path");
 let fs = require("fs-extra");
 let file_util = require("./file_util");
 let date_util = require("./date_util");
-let app_config = require("../../app_config")
+let ctx_util = require("./ctx_util");
+let app_config = require("../../app_config");
 
 let util = {};
 
@@ -19,19 +20,22 @@ util.createBackendUtilfile = async function (util_name, util_dir, overwriteIfExi
     console.log(`createBackendUtilfile, util_name:${util_name}, util_dir: ${util_dir}, overwriteIfExist: ${overwriteIfExist}`);
 
     let util_module_name = file_util.getPreffix(util_name);
-    let filepath = path.resolve(util_dir, `${util_module_name}.js`);
+    let filepath = path.resolve(ctx_util.getRootDir(), util_dir, `${util_module_name}.js`);
 
     let utilTempStr = `// Auto Created at ${date_util.format("YYYY/MM/DD HH:mm:ss")}
 let ${util_module_name} = {};
 module.exports = ${util_module_name};`;
 
     let fileExists = await fs.exists(filepath);
-    if (fileExists && overwriteIfExist) {
-        await fs.outputFile(filepath, utilTempStr);
+    if (fileExists) {
+        if (overwriteIfExist) {
+            await fs.outputFile(filepath, utilTempStr);
+        } else {
+            console.error(`file: ${filepath} is existed, can't overwrite`);
+        }
     } else {
-        console.error(`file: ${filepath} is existed, can't overwrite`);
+        await fs.outputFile(filepath, utilTempStr);
     }
-
 };
 
 /**
@@ -42,12 +46,12 @@ module.exports = ${util_module_name};`;
  * @returns {Promise<void>}
  */
 util.createFrontendUtilfile = async function (util_name, util_dir, overwriteIfExist = false) {
-    if (!util_dir) util_dir = app_config.backend.path.js_utils_dir;
+    if (!util_dir) util_dir = app_config.frontend.path.js_utils_dir;
 
     console.log(`createFrontendUtilfile, util_name:${util_name}, util_dir: ${util_dir}, overwriteIfExist: ${overwriteIfExist}`);
 
     let util_module_name = file_util.getPreffix(util_name);
-    let filepath = path.resolve(util_dir, `${util_module_name}.js`);
+    let filepath = path.resolve(ctx_util.getRootDir(), util_dir, `${util_module_name}.js`);
 
     let utilTempStr = `// Auto Created at ${date_util.format("YYYY/MM/DD HH:mm:ss")}
 !function (root, factory) {
@@ -67,10 +71,14 @@ function factory() {
 }`;
 
     let fileExists = await fs.exists(filepath);
-    if (fileExists && overwriteIfExist) {
-        await fs.outputFile(filepath, utilTempStr);
+    if (fileExists) {
+        if (overwriteIfExist) {
+            await fs.outputFile(filepath, utilTempStr);
+        } else {
+            console.error(`file: ${filepath} is existed, can't overwrite`);
+        }
     } else {
-        console.error(`file: ${filepath} is existed, can't overwrite`);
+        await fs.outputFile(filepath, utilTempStr);
     }
 };
 

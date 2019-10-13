@@ -1,8 +1,8 @@
 let util = require("./util");
 
 let createUtil = async function () {
-    await util.createBackendUtilfile("demo_util", "", true);
-    await util.createFrontendUtilfile("demo_util", "", true);
+    await util.createBackendUtilfile("_demo_backend_util", "", true);
+    await util.createFrontendUtilfile("_demo_frontend_util", "", true);
 };
 
 createUtil().then(result => {

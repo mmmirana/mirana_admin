@@ -3,8 +3,7 @@ let path = require('path');
 let ctx_util = {};
 
 ctx_util.getRootDir = function () {
-    return path.resolve();
+    return path.resolve(__dirname,'../../');
 };
-
 
 module.exports = ctx_util;

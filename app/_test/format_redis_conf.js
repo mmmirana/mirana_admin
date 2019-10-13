@@ -18,7 +18,7 @@ let format_redis_conf = async function () {
     console.log(files.length, files.map(item => {
         return item.filepath;
     }));
-    files.forEach(async (item) => {
+    for (const item of files) {
         let filepath = item.filepath;
         let filecontent = await fs.readFile(filepath);
 
@@ -27,7 +27,7 @@ let format_redis_conf = async function () {
         filecontent = regexp_util.formatEOL(filecontent);// 替换多个回车为1个
         console.log(filecontent);
         // await fs.outputFile(filepath, filecontent);
-    })
+    }
 };
 
 format_redis_conf().then(files => {
